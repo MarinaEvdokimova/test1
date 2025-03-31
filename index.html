@@ -19,10 +19,10 @@
     }
   }
 </script>
-		<script type="module">
-		  import * as THREE from 'three';
-          import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-          import { CSS3DRenderer, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
+	 <script type="module">
+	   import * as THREE from 'three';
+           import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+           import { CSS3DRenderer, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
 
 			let camera, scene, renderer;
 			let scene2, renderer2;
@@ -55,7 +55,7 @@
 				const manager = new THREE.LoadingManager();
 				const loader = new THREE.TextureLoader( manager );
 
-				loader.load( 'preview30002.jpg', function ( texture ) {
+				loader.load( 'https://funnyvillage.ru/preview30002.jpg', function ( texture ) {
 
 					texture.colorSpace = THREE.SRGBColorSpace;
 					texture.minFilter = THREE.NearestFilter;
@@ -73,8 +73,8 @@
 
 				for ( let i = 0; i < 3; i ++ ) {
 
-					const element = document.createElement( 'div' );
-					element.className = 'flex items-start gap-x-1';						
+				   const element = document.createElement( 'div' );
+				   element.className = 'flex items-start gap-x-1';						
                    
 				   const spriteGroup = document.createElement( 'div' );
 				   spriteGroup.className = 'flex flex-col items-center';
