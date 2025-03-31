@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+		<title>Test</title>
+		<style>
+			body { margin: 0; }			
+		</style>
+	</head>
+	<body>		
+    <div id="container"></div>
+	<script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.172.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.172.0/examples/jsm/"
+    }
+  }
+</script>
+		<script type="module">
+		  import * as THREE from 'three';
+          import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+          import { CSS3DRenderer, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
+
+			let camera, scene, renderer;
+			let scene2, renderer2;
+			let controls;
+			let sphere;			
+
+			init();				
+
+			function init() {
+
+				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 3000 );
+				camera.position.z = 150;
+
+				scene = new THREE.Scene();             
+				
+				scene2 = new THREE.Scene();
+				scene2.background = new THREE.Color( 0xffffff );
+				
+				const light = new THREE.AmbientLight( 0xffffff, 3 );
+				scene2.add( light );
+				
+				const panoSphereGeo = new THREE.SphereGeometry( 500, 100, 100 );
+				
+				const panoSphereMat = new THREE.MeshStandardMaterial( {
+					side: THREE.BackSide										
+				} );
+				
+				sphere = new THREE.Mesh( panoSphereGeo, panoSphereMat );
+				
+				const manager = new THREE.LoadingManager();
+				const loader = new THREE.TextureLoader( manager );
+
+				loader.load( 'preview30002.jpg', function ( texture ) {
+
+					texture.colorSpace = THREE.SRGBColorSpace;
+					texture.minFilter = THREE.NearestFilter;
+					texture.generateMipmaps = false;
+					sphere.material.map = texture;
+
+				} );	
+				
+				manager.onLoad = function () {
+
+					scene2.add( sphere );
+					animate()
+
+				};				
+
+				for ( let i = 0; i < 3; i ++ ) {
+
+					const element = document.createElement( 'div' );
+					element.className = 'flex items-start gap-x-1';						
+                   
+				   const spriteGroup = document.createElement( 'div' );
+				   spriteGroup.className = 'flex flex-col items-center';
+				   
+				   const sprite = document.createElement( 'div' );				   
+					sprite.className = 'w-3 h-3 bg-white rounded-full';
+					
+					spriteGroup.appendChild( sprite );	
+
+					const lineCont = document.createElement( 'div' );
+					lineCont.className = 'h-10 grid grid-cols-2 divide-x-1 divide-white';	
+					lineCont.appendChild( document.createElement( 'div' ));	
+					lineCont.appendChild( document.createElement( 'div' ));
+					spriteGroup.appendChild( lineCont );							
+					
+					element.appendChild( spriteGroup );
+					
+					const details = document.createElement( 'div' );
+					details.className = 'text-white text-xs';
+					details.innerHTML = 'текст';
+					element.appendChild( details );	
+					
+                    const vector = new THREE.Vector3();					
+
+					const object = new THREE.Object3D();
+
+					object.position.setFromCylindricalCoords ( 500, i+1, 0 );
+
+					vector.copy( object.position ).multiplyScalar( -2 );
+
+					object.lookAt( vector );
+
+					const objectCSS = new CSS3DObject( element );
+					objectCSS.position.set ( object.position.x, object.position.y, object.position.z );
+					objectCSS.rotation.set ( object.rotation.x, object.rotation.y, object.rotation.z );					
+					scene.add( objectCSS );	
+				}
+				
+
+				renderer = new CSS3DRenderer();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.domElement.style.position = 'absolute';
+				
+				renderer.domElement.style.top = 0;				
+
+				renderer2 = new THREE.WebGLRenderer();
+				renderer2.setPixelRatio( window.devicePixelRatio );
+				renderer2.setSize( window.innerWidth, window.innerHeight );
+				renderer2.setAnimationLoop( animate );
+				
+				document.getElementById( 'container' ).appendChild( renderer2.domElement );
+				document.getElementById( 'container' ).appendChild( renderer.domElement );
+
+				controls = new OrbitControls( camera, renderer.domElement );
+				controls.enableZoom = false;
+				controls.enablePan = false;
+				controls.enableDamping = true;
+				controls.rotateSpeed = - 0.25;
+			}			
+
+			function animate() {				
+
+				controls.update();
+				render()
+
+			}
+
+			function render() {
+
+				renderer.render( scene, camera );
+                renderer2.render( scene2, camera );
+			}
+		</script>
+	</body>
+</html>
